@@ -3,14 +3,17 @@ A python based audio tempo and key identifier which can be run through a browser
 
 
 ## Installation 
-`git clone https://github.com/jashjasani/MusicKeyAndBPM`
-`cd MusicKeyAndBPM`
-`pip install -r requirements.txt`
-
+```bash
+git clone https://github.com/jashjasani/MusicKeyAndBPM
+cd MusicKeyAndBPM
+pip install -r requirements.txt
+```
 
 
 
 ## Running the server 
-`uvicorn main:app --reload`
+```bash
+uvicorn main:app --reload
+```
 
 This will start server on port 8000
