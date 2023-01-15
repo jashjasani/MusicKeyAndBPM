@@ -1,20 +1,22 @@
 # created by jashjasani : https://github.com/jashjasani
 import io
+
+import soundfile
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 from fastapi.staticfiles import StaticFiles
 import librosa
 import librosa.effects
 import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
-import concurrent.futures
+import aiofiles
 from fastapi.responses import HTMLResponse
 
 
 class Tonal_Fragment(object):
-    def __init__(self, waveform, sr, tstart=None, tend=None):
+    def _init_(self, waveform, sr, tstart=None, tend=None):
         self.waveform = waveform
         self.sr = sr
         self.tstart = tstart
@@ -105,14 +107,12 @@ class Tonal_Fragment(object):
 
 
 def libLoader(filename):
-    concurrent.futures.ThreadPoolExecutor
     y, sr = librosa.load(filename)
-    y_harmonic, y_percussive = librosa.effects.hpss(y)
+    y_harmonic, y_percussive = librosa.effects.hpss
     return y, sr, y_harmonic, y_percussive
 
 
 def bpmAndKeyFinder(filename):
-
     y, sr, y_harmonic, y_percussive = libLoader(filename)
 
     tempo, beat = librosa.beat.beat_track(y=y, sr=sr)
@@ -120,6 +120,8 @@ def bpmAndKeyFinder(filename):
     Tone = Tonal_Fragment(y_harmonic, sr)
 
     key = Tone.findKey()
+
+    os.remove(filename)
 
     return tempo, key
 
@@ -154,13 +156,13 @@ async def root():
 async def root(request: Request):
     form = await request.form()
     file = form["file"]
-    audio_file = file.file
-    bpm, key = bpmAndKeyFinder(audio_file)
+    audio_format = file.content_type
+    ##audio_file = file.file
+    async with aiofiles.open('files/audio.'+audio_format.split('/')[-1], 'wb') as out_file:
+        content = await file.read()  # async read
+        await out_file.write(content)  # async write
+    bpm, key = bpmAndKeyFinder('files/audio.'+audio_format.split('/')[-1])
     return {
         "bpm": bpm,
         "key": key
     }
-
-
-
-
