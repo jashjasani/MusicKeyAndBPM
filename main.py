@@ -16,7 +16,7 @@ from fastapi.responses import HTMLResponse
 
 
 class Tonal_Fragment(object):
-    def _init_(self, waveform, sr, tstart=None, tend=None):
+    def __init__(self, waveform, sr, tstart=None, tend=None):
         self.waveform = waveform
         self.sr = sr
         self.tstart = tstart
@@ -102,13 +102,13 @@ class Tonal_Fragment(object):
             plt.title(title)
         plt.colorbar()
         plt.tight_layout()
-        plt.savefig(img,format='png')
+        plt.savefig(img, format='png')
         return img
 
 
 def libLoader(filename):
     y, sr = librosa.load(filename)
-    y_harmonic, y_percussive = librosa.effects.hpss
+    y_harmonic, y_percussive = librosa.effects.hpss(y=y)
     return y, sr, y_harmonic, y_percussive
 
 
@@ -117,7 +117,7 @@ def bpmAndKeyFinder(filename):
 
     tempo, beat = librosa.beat.beat_track(y=y, sr=sr)
 
-    Tone = Tonal_Fragment(y_harmonic, sr)
+    Tone = Tonal_Fragment(waveform=y_harmonic, sr=sr)
 
     key = Tone.findKey()
 
