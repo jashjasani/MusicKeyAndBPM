@@ -9,6 +9,13 @@ cd MusicKeyAndBPM
 pip install -r requirements.txt
 ```
 
+## Dependencies 
+Linux
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+For windows ffmpeg can be downloaded from :  https://ffmpeg.org/download.html
 
 
 ## Running the server 
@@ -16,4 +23,11 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
+
 This will start server on port 8000
+
+
+## To run server on specific port and IP
+```bash
+uvicorn main:app --host [HOST_IP] --port [PORT_NUMBER] 
+```
