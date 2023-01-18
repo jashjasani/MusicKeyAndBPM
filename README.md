@@ -18,9 +18,9 @@ sudo apt install ffmpeg
 For windows ffmpeg can be downloaded from :  https://ffmpeg.org/download.html
 
 
-## Running the server 
+## Starting the server
 ```bash
-uvicorn main:app --reload
+python main.py
 ```
 
 
@@ -28,6 +28,4 @@ This will start server on port 8000
 
 
 ## To run server on specific port and IP
-```bash
-uvicorn main:app --host [HOST_IP] --port [PORT_NUMBER] 
-```
+change the port and host keys in config.json

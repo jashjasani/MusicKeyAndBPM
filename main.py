@@ -1,7 +1,5 @@
 # created by jashjasani : https://github.com/jashjasani
 import io
-
-import soundfile
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -13,6 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import aiofiles
 from fastapi.responses import HTMLResponse
+import uvicorn
+import json
 
 
 class Tonal_Fragment(object):
@@ -108,14 +108,14 @@ class Tonal_Fragment(object):
 
 def libLoader(filename):
     y, sr = librosa.load(filename)
-    y_harmonic, y_percussive = librosa.effects.hpss(y=y)
-    return y, sr, y_harmonic, y_percussive
+    y_harmonic = librosa.effects.harmonic(y=y)
+    return y, sr, y_harmonic
 
 
 def bpmAndKeyFinder(filename):
-    y, sr, y_harmonic, y_percussive = libLoader(filename)
+    y, sr, y_harmonic = libLoader(filename)
 
-    tempo, beat = librosa.beat.beat_track(y=y, sr=sr)
+    tempo = librosa.beat.tempo(y=y, sr=sr)
 
     Tone = Tonal_Fragment(waveform=y_harmonic, sr=sr)
 
@@ -123,7 +123,7 @@ def bpmAndKeyFinder(filename):
 
     os.remove(filename)
 
-    return tempo, key
+    return tempo[0], key
 
 
 def generate_html():
@@ -157,12 +157,18 @@ async def root(request: Request):
     form = await request.form()
     file = form["file"]
     audio_format = file.content_type
-    ##audio_file = file.file
-    async with aiofiles.open('files/audio.'+audio_format.split('/')[-1], 'wb') as out_file:
+    async with aiofiles.open('files/audio.' + audio_format.split('/')[-1], 'wb') as out_file:
         content = await file.read()  # async read
         await out_file.write(content)  # async write
-    bpm, key = bpmAndKeyFinder('files/audio.'+audio_format.split('/')[-1])
+    bpm, key = bpmAndKeyFinder('files/audio.' + audio_format.split('/')[-1])
     return {
         "bpm": bpm,
         "key": key
     }
+
+
+if __name__ == "__main__":
+    with open("config.json") as f:
+        text = f.read()
+    config = json.loads(text)
+    uvicorn.run(app, host=config["host"], port=int(config["port"]), log_level="info")
