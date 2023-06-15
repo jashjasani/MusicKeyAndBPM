@@ -9,7 +9,7 @@ cd MusicKeyAndBPM
 pip install -r requirements.txt
 ```
 
-##Dependencies 
+## Dependencies 
 Linux
 ```bash
 sudo apt update
